@@ -1,0 +1,17 @@
+{{{
+  exports({ to: app.configPath('webhooks.ts') })
+}}}
+import { defineConfig } from 'adonis-webhooks'
+
+/**
+ * Each key becomes "POST /webhooks/<key>". Register the route by calling
+ * "webhooks.registerRoutes()" inside "start/routes.ts".
+ */
+export default defineConfig({
+  routes: {
+    // clerk: {
+    //   consumer: () => import('../app/webhooks/clerk_consumer.js'),
+    //   secret: env.get('CLERK_WEBHOOK_SECRET'),
+    // },
+  },
+})
