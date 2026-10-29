@@ -1,6 +1,6 @@
 {
   "name": "adonis-webhooks",
-  "description": "",
+  "description": "Receive signed webhooks in AdonisJS, inspired by Symfony's Webhook component",
   "version": "0.0.0",
   "engines": {
     "node": ">=24.0.0"
@@ -35,7 +35,15 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [],
-  "author": "",
+  "author": "Abdul Rafay Modi (https://github.com/AlphaRomeoMike)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlphaRomeoMike/adonis-webhooks.git"
+  },
+  "homepage": "https://github.com/AlphaRomeoMike/adonis-webhooks#readme",
+  "bugs": {
+    "url": "https://github.com/AlphaRomeoMike/adonis-webhooks/issues"
+  },
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/assembler": "^8.0.0",
