@@ -2,7 +2,7 @@
 
 Receive signed webhooks in AdonisJS. Inspired by Symfony's Webhook component.
 
-Each incoming webhook goes through a **parser**, which verifies the signature and turns the request into a `RemoteEvent`, and then a **consumer**, which acts on the event. Signatures that follow the [Standard Webhooks](https://www.standardwebhooks.com) spec are verified out of the box. That covers senders such as Clerk, Resend and other Svix-powered services. For providers that sign differently, you write a small parser.
+Each incoming webhook goes through a **parser**, which verifies the signature and turns the request into a `RemoteEvent`, and then a **consumer**, which acts on the event. Signatures that follow the [Standard Webhooks](https://www.standardwebhooks.com) spec are verified out of the box. That covers senders such as OpenAI, plus Clerk, Resend and other Svix-powered services, which send the same headers prefixed `svix-` instead of `webhook-`. For providers that sign differently, you write a small parser.
 
 Requires AdonisJS v7 and Node.js 24 or later.
 
@@ -63,7 +63,7 @@ import type { RemoteEvent } from 'adonis-webhooks'
 export default class ClerkConsumer {
   async consume(event: RemoteEvent<{ type: string; data: any }>) {
     if (event.name === 'user.created') {
-      // event.id      -> the "webhook-id" header, use it to skip duplicates
+      // event.id      -> the "webhook-id" (or "svix-id") header, use it to skip duplicates
       // event.payload -> the parsed JSON body
     }
   }
