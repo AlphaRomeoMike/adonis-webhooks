@@ -46,14 +46,19 @@ async function setup() {
   return new WebhooksManager(config, router, app)
 }
 
-function makeContext(type: string, body: string, signedBody = body) {
+function makeContext(
+  type: string,
+  body: string,
+  signedBody = body,
+  prefix: 'webhook' | 'svix' = 'webhook'
+) {
   const id = 'msg_1'
   const timestamp = new Date()
   const req = new IncomingMessage(new Socket())
   req.headers = {
-    'webhook-id': id,
-    'webhook-timestamp': String(Math.floor(timestamp.getTime() / 1000)),
-    'webhook-signature': new Webhook(secret).sign(id, timestamp, signedBody),
+    [`${prefix}-id`]: id,
+    [`${prefix}-timestamp`]: String(Math.floor(timestamp.getTime() / 1000)),
+    [`${prefix}-signature`]: new Webhook(secret).sign(id, timestamp, signedBody),
   }
 
   const request = new RequestFactory().merge({ req }).create()
@@ -79,6 +84,25 @@ test.group('WebhooksManager', (group) => {
     assert.deepEqual(received, [
       new RemoteEvent('msg_1', 'user.created', { type: 'user.created', data: { id: 1 } }),
     ])
+  })
+
+  test('accepts svix-* headers sent by Svix-powered senders', async ({ assert }) => {
+    const manager = await setup()
+    const body = '{"type":"user.created"}'
+    const ctx = makeContext('clerk', body, body, 'svix')
+
+    await manager.handle(ctx)
+
+    assert.equal(ctx.response.getStatus(), 204)
+    assert.deepEqual(received, [new RemoteEvent('msg_1', 'user.created', { type: 'user.created' })])
+  })
+
+  test('rejects a tampered body sent with svix-* headers', async ({ assert }) => {
+    const manager = await setup()
+    const ctx = makeContext('clerk', '{"type":"user.deleted"}', '{"type":"user.created"}', 'svix')
+
+    await assert.rejects(() => manager.handle(ctx), 'Invalid webhook signature')
+    assert.lengthOf(received, 0)
   })
 
   test('accepts a secret wrapped in Secret', async ({ assert }) => {
