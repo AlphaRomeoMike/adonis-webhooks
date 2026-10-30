@@ -30,6 +30,22 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install
+        run: npm install
+      # Fails only for what users install; dev tooling is reported in the next step
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - name: Audit all dependencies (advisory)
+        continue-on-error: true
+        run: npm audit --audit-level=high
+
   tests:
     runs-on: ${{ matrix.os }}
     strategy:
